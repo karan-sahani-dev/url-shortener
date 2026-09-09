@@ -1,4 +1,4 @@
-package com.karan.url_shortener;
+package com.karan.url_shortener.Controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,3 +22,4 @@ public class HealthController {
         return ResponseEntity.ok(response);
     }
 }
+
