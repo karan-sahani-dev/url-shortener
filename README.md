@@ -11,10 +11,38 @@ A distributed URL shortener built with Java + Spring Boot.
 
 ## 🚀 Features
 - [x] Health check endpoint
-- [ ] URL shortening with Base62 encoding
+- [x] Shorten long URLs with Base62 encoding
+- [x] Retrieve original URL from short code
+- [ ] MySQL persistent storage
 - [ ] Redis caching
 - [ ] Rate limiting
 - [ ] Docker deployment
+
+## 📡 API Endpoints
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| GET | /api/health | Health check | ✅ |
+| POST | /api/urls | Shorten a URL | ✅ |
+| GET | /api/urls/{shortCode} | Get original URL | ✅ |
+
+## 📦 Request/Response
+
+### POST /api/urls
+**Request:**
+```json
+{
+    "originalUrl": "https://www.google.com"
+}
+```
+
+**Response:**
+```json
+{
+    "originalUrl": "https://www.google.com",
+    "shortCode": "p7Jlhv",
+    "shortUrl": "http://localhost:8080/p7Jlhv"
+}
+```
 
 ## ▶️ How to Run
 ```bash
@@ -23,7 +51,15 @@ cd url-shortener
 ./mvnw spring-boot:run
 ```
 
-## 📡 API Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/health | Health check |
+## 🏗️ Project Structure
+```
+src/
+├── Controller/
+│   ├── HealthController.java
+│   └── UrlController.java
+├── DTO/
+│   ├── UrlRequest.java
+│   └── UrlResponse.java
+└── service/
+    └── UrlService.java
+```
