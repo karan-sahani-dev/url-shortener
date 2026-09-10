@@ -14,6 +14,8 @@ A distributed URL shortener built with Java + Spring Boot.
 - [x] Shorten long URLs with Base62 encoding
 - [x] Retrieve original URL from short code
 - [x] MySQL persistent storage
+- [ ] Collision handling
+- [ ] URL validation
 - [ ] Redis caching
 - [ ] Rate limiting
 - [ ] Docker deployment
@@ -39,27 +41,9 @@ A distributed URL shortener built with Java + Spring Boot.
 ```json
 {
     "originalUrl": "https://www.google.com",
-    "shortCode": "p7Jlhv",
-    "shortUrl": "http://localhost:8080/p7Jlhv"
+    "shortCode": "vG9BvE",
+    "shortUrl": "http://localhost:8080/vG9BvE"
 }
 ```
 
-## ▶️ How to Run
-```bash
-git clone https://github.com/karan-sahani-dev/url-shortener.git
-cd url-shortener
-./mvnw spring-boot:run
-```
-
 ## 🏗️ Project Structure
-```
-src/
-├── Controller/
-│   ├── HealthController.java
-│   └── UrlController.java
-├── DTO/
-│   ├── UrlRequest.java
-│   └── UrlResponse.java
-└── service/
-    └── UrlService.java
-```
