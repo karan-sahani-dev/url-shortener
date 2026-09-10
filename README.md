@@ -13,7 +13,7 @@ A distributed URL shortener built with Java + Spring Boot.
 - [x] Health check endpoint
 - [x] Shorten long URLs with Base62 encoding
 - [x] Retrieve original URL from short code
-- [ ] MySQL persistent storage
+- [x] MySQL persistent storage
 - [ ] Redis caching
 - [ ] Rate limiting
 - [ ] Docker deployment
