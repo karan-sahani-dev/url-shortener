@@ -8,6 +8,9 @@ import com.karan.url_shortener.exception.UrlNotFoundException;
 import com.karan.url_shortener.repository.UrlRepository;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
@@ -20,6 +23,8 @@ public class UrlService {
     public UrlService(UrlRepository urlRepository) {
         this.urlRepository = urlRepository;
     }
+
+  //  @CachePut(value = "urls", key = "#result.shortCode")
     public UrlResponse shortenUrl(UrlRequest request) {
         String shortCode;
         do{
@@ -43,10 +48,13 @@ public class UrlService {
                 shortUrl
         );
     }
+
+    @Cacheable(value = "urls", key = "#shortCode")
     public String getOriginalUrl(String shortCode) {
         return urlRepository.findByShortCode(shortCode).map(UrlEntity::getOriginalUrl).orElseThrow(() ->
                 new UrlNotFoundException(shortCode));
     }
+
     private String generateShortCode() {
         StringBuilder shortCode = new StringBuilder();
         for(int i=0; i<6; i++) {
