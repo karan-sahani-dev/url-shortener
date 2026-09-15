@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.env
+node_modules/
+.postman-run-tools/node_modules/
+postman-run-report/
