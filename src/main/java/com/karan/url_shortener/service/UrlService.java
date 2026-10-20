@@ -1,46 +1,68 @@
 package com.karan.url_shortener.service;
 
 import com.karan.url_shortener.DTO.UrlRequest;
-
 import com.karan.url_shortener.DTO.UrlResponse;
 import com.karan.url_shortener.Model.UrlEntity;
 import com.karan.url_shortener.exception.UrlNotFoundException;
 import com.karan.url_shortener.repository.UrlRepository;
-import org.springframework.stereotype.Repository;
 
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
-
-@Repository
+@Service
 public class UrlService {
-    private  final UrlRepository urlRepository;
+
+    private final UrlRepository urlRepository;
+
     private final SecureRandom secureRandom = new SecureRandom();
-    private static final String CHARS = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789";
+
+    private static final String CHARS =
+            "abcdefghijklmnopqrstuvwxyz" +
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                    "0123456789";
+
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     public UrlService(UrlRepository urlRepository) {
         this.urlRepository = urlRepository;
     }
 
-  //  @CachePut(value = "urls", key = "#result.shortCode")
+
     public UrlResponse shortenUrl(UrlRequest request) {
+
         String shortCode;
-        do{
+
+        // Generate unique short code
+        do {
             shortCode = generateShortCode();
         }
-        while(urlRepository.findByShortCode(shortCode).isPresent());
+        while (urlRepository.findByShortCode(shortCode).isPresent());
 
-        String shortUrl = "http://localhost:8080/" + shortCode;
+
+        // Local:
+        // http://localhost:8080/abc123
+        //
+        // Railway:
+        // https://url-shortener-production-5d1a.up.railway.app/abc123
+        String shortUrl = baseUrl + "/" + shortCode;
+
+
         UrlEntity urlEntity = new UrlEntity();
+
         urlEntity.setOriginalUrl(request.getOriginalUrl());
         urlEntity.setShortCode(shortCode);
         urlEntity.setShortUrl(shortUrl);
         urlEntity.setCreatedAt(LocalDateTime.now());
         urlEntity.setClickCount(0L);
 
+
         urlRepository.save(urlEntity);
+
 
         return new UrlResponse(
                 request.getOriginalUrl(),
@@ -49,18 +71,33 @@ public class UrlService {
         );
     }
 
+
     @Cacheable(value = "urls", key = "#shortCode")
     public String getOriginalUrl(String shortCode) {
-        return urlRepository.findByShortCode(shortCode).map(UrlEntity::getOriginalUrl).orElseThrow(() ->
-                new UrlNotFoundException(shortCode));
+
+        return urlRepository
+                .findByShortCode(shortCode)
+                .map(UrlEntity::getOriginalUrl)
+                .orElseThrow(
+                        () -> new UrlNotFoundException(shortCode)
+                );
     }
 
+
     private String generateShortCode() {
+
         StringBuilder shortCode = new StringBuilder();
-        for(int i=0; i<6; i++) {
-            int index = secureRandom.nextInt(CHARS.length());
-            shortCode.append(CHARS.charAt(index));
+
+        for (int i = 0; i < 6; i++) {
+
+            int index =
+                    secureRandom.nextInt(CHARS.length());
+
+            shortCode.append(
+                    CHARS.charAt(index)
+            );
         }
+
         return shortCode.toString();
     }
 }
